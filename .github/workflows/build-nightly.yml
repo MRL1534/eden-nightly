@@ -22,7 +22,7 @@ on:
 
 jobs:
   info:
-    if: github.event.inputs.job_to_run == 'all' || github.event.inputs.job_to_run == 'info'
+    if: github.event.inputs.job_to_run == 'all' || github.event.inputs.job_to_run == 'info' || github.event.inputs.job_to_run == 'windows'
     runs-on: ubuntu-latest
     name: "Get info"
     strategy:
@@ -67,11 +67,11 @@ jobs:
           name: changelog
           path: ~/changelog
 
-      - name: Upload source code
-        uses: actions/upload-artifact@v5.0.0
-        with:
-          name: source
-          path: artifacts
+      # - name: Upload source code
+        # uses: actions/upload-artifact@v5.0.0
+        # with:
+          # name: source
+          # path: artifacts
 
   appimage:
     if: github.event.inputs.job_to_run == 'all' || github.event.inputs.job_to_run == 'appimage'
@@ -128,6 +128,11 @@ jobs:
       - name: Clone Eden
         run: |
           git clone 'https://git.eden-emu.dev/eden-emu/eden.git' ./eden
+
+      - name: Apply .ts
+        run: |
+          shopt -s nullglob
+          cp -v "$GITHUB_WORKSPACE"/dist/*.ts ./eden/dist/languages/
 
       - name: Restore ccache for ${{ matrix.target }}
         if: ${{ matrix.ccache == 'true'}}
@@ -228,14 +233,14 @@ jobs:
              target: normal
              arch: x86_64
              runs-on: windows-2022
-           - toolchain: msvc
-             target: normal
-             arch: arm64
-             runs-on: windows-11-arm
-           - toolchain: clang
-             target: normal
-             arch: x86_64
-             runs-on: windows-2022
+           # - toolchain: msvc
+             # target: normal
+             # arch: arm64
+             # runs-on: windows-11-arm
+           # - toolchain: clang
+             # target: normal
+             # arch: x86_64
+             # runs-on: windows-2022
            - toolchain: clang
              target: PGO
              arch: x86_64
@@ -311,6 +316,12 @@ jobs:
           cd ./eden
           echo "VERSION=$(git rev-list --count HEAD)" >> "${GITHUB_ENV}"
 
+      - name: Apply .ts
+        shell: bash
+        run: |
+          shopt -s nullglob
+          cp -v "$GITHUB_WORKSPACE"/dist/*.ts ./eden/dist/languages/
+
       - name: Restore ccache
         if: ${{ matrix.target == 'normal' }}
         uses: actions/cache/restore@v4
@@ -374,6 +385,11 @@ jobs:
         run: |
           git clone 'https://git.eden-emu.dev/eden-emu/eden.git' ./eden
 
+      - name: Apply .ts
+        run: |
+          shopt -s nullglob
+          cp -v "$GITHUB_WORKSPACE"/dist/*.ts ./eden/dist/languages/
+
       - name: Restore ccache for ${{ matrix.target }}
         uses: actions/cache/restore@v4
         id: restore-ccache-cache
@@ -432,6 +448,11 @@ jobs:
         run: |
           git clone 'https://git.eden-emu.dev/eden-emu/eden.git' ./eden
 
+      - name: Apply .ts
+        run: |
+          shopt -s nullglob
+          cp -v "$GITHUB_WORKSPACE"/dist/*.ts ./eden/dist/languages/
+
       - name: Restore ccache
         if: matrix.target == 'FreeBSD'
         uses: actions/cache/restore@v4
@@ -477,7 +498,16 @@ jobs:
           path: eden/build/artifacts/
 
   release:
-    if: github.ref_name == 'main' && github.event.inputs.job_to_run == 'all'
+    if: |
+      always() &&
+      github.ref_name == 'main' && 
+      (github.event.inputs.job_to_run == 'all' || github.event.inputs.job_to_run == 'windows') &&
+      needs.info.result == 'success' &&
+      (needs.windows.result == 'success' || needs.windows.result == 'skipped') &&
+      (needs.appimage.result == 'success' || needs.appimage.result == 'skipped') &&
+      (needs.macos.result == 'success' || needs.macos.result == 'skipped') &&
+      (needs.android.result == 'success' || needs.android.result == 'skipped') &&
+      (needs.bsd.result == 'success' || needs.bsd.result == 'skipped')
     name: "release"
     needs: [info, appimage, windows, macos, android, bsd]
     permissions:
