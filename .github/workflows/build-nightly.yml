@@ -468,7 +468,7 @@ jobs:
         uses: vmactions/freebsd-vm@v1.2.4
         with:
           usesh: true
-          envs: 'TARGET'
+          envs: 'TARGET CCACHE_DIR CCACHE_COMPILERCHECK CCACHE_SLOPPINESS'
           run: |
             chmod +x ./BSD-dependencies.sh ./eden-BSD.sh
             ./BSD-dependencies.sh
