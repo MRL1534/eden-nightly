@@ -224,7 +224,7 @@ jobs:
   windows:
     if: github.event.inputs.job_to_run == 'all' || github.event.inputs.job_to_run == 'windows'
     runs-on: ${{ matrix.runs-on }}
-    name: "Windows ${{ matrix.target }} ${{ matrix.toolchain }} (${{ matrix.arch }})"
+    name: "Windows ${{ matrix.toolchain }} ${{ matrix.target }} (${{ matrix.arch }})"
     strategy:
       fail-fast: false
       matrix:
@@ -279,10 +279,9 @@ jobs:
           msystem: mingw64
           update: true
           cache: false
-          install: git make p7zip autoconf libtool autoconf-archive base-devel zip unzip automake-wrapper automake
+          install: autoconf automake-wrapper automake autoconf-archive base-devel git libtool make p7zip zip unzip
           pacboy: >-
-            toolchain:p clang:p lld:p ccache:p cmake:p ffmpeg:p ninja:p lz4:p qt6-base:p qt6-tools:p
-            qt6-translations:p qt6-svg:p glslang:p boost:p zstd:p rapidjson:p python-pip:p nlohmann-json:p libusb:p vulkan-devel:p
+            boost:p ccache:p clang:p cmake:p glslang:p libusb:p lld:p ninja:p qt6-base:p qt6-tools:p qt6-translations:p qt6-svg:p rapidjson:p toolchain:p python-pip:p
 
       - name: Install Qt
         if: ${{ matrix.toolchain != 'msys2' }}
@@ -357,13 +356,13 @@ jobs:
       - name: Upload Eden 7z
         uses: actions/upload-artifact@v5.0.0
         with:
-          name: eden-windows-${{ matrix.toolchain }}-${{ matrix.target }}-7z-${{ matrix.arch }}
+          name: eden-windows-${{ matrix.toolchain }}-${{ matrix.target }}-${{ matrix.arch }}-7z
           path: eden/build/artifacts/
 
       - name: Upload Eden installer
         uses: actions/upload-artifact@v5.0.0
         with:
-          name: eden-windows-${{ matrix.toolchain }}-${{ matrix.target }}-installer-${{ matrix.arch }}
+          name: eden-windows-${{ matrix.toolchain }}-${{ matrix.target }}-${{ matrix.arch }}-installer
           path: installer/artifacts/
 
   macos:
@@ -465,7 +464,7 @@ jobs:
 
       - name: Compile Eden FreeBSD
         if: matrix.target == 'FreeBSD'
-        uses: vmactions/freebsd-vm@v1.2.4
+        uses: vmactions/freebsd-vm@v1.2.5
         with:
           usesh: true
           envs: 'TARGET CCACHE_DIR CCACHE_COMPILERCHECK CCACHE_SLOPPINESS'
@@ -485,7 +484,7 @@ jobs:
             ./BSD-dependencies.sh && ./eden-BSD.sh
 
       - name: Save ccache
-        if: matrix.target == 'FreeBSD'
+        if: matrix.target == 'FreeBSD' && github.ref_name == 'main'
         uses: actions/cache/save@v4
         with:
           path: ${{ env.CCACHE_DIR }}

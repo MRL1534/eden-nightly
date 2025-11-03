@@ -1,0 +1,48 @@
+diff --git a/cpmfile.json b/cpmfile.json
+index abb80c1dd7..23c4fc7c3f 100644
+--- a/cpmfile.json
++++ b/cpmfile.json
+@@ -30,6 +30,7 @@
+         "tag": "%VERSION%",
+         "hash": "c4ab814c20fbad7e3f0ae169125a4988a2795631194703251481dc36b18da65c886c4faa9acd046b0a295005217b3689eb0126108a9ba5aac2ca909aae263c2f",
+         "version": "8",
++        "bundled": true,
+         "git_version": "12.0.0"
+     },
+     "lz4": {
+@@ -37,6 +38,7 @@
+         "repo": "lz4/lz4",
+         "sha": "ebb370ca83",
+         "hash": "35c21a5d9cfb5bbf314a5321d02b36819491d2ee3cf8007030ca09d13ca4dae672247b7aeab553e973093604fc48221cb03dc92197c6efe8fc3746891363fdab",
++        "bundled": true,
+         "source_subdir": "build/cmake"
+     },
+     "nlohmann": {
+@@ -54,6 +56,7 @@
+         "hash": "8c9642495bafd6fad4ab9fb67f09b268c69ff9af0f4f20cf15dfc18852ff1f312bd8ca41de761b3f8d8e90e77d79f2ccacd3d4c5b19e475ecf09d021fdfe9088",
+         "version": "1.2",
+         "git_version": "1.3.1",
++        "bundled": true,
+         "options": [
+             "ZLIB_BUILD_SHARED OFF",
+             "ZLIB_INSTALL OFF"
+@@ -66,6 +69,7 @@
+         "version": "1.5",
+         "source_subdir": "build/cmake",
+         "find_args": "MODULE",
++        "bundled": true,
+         "options": [
+             "ZSTD_BUILD_SHARED OFF"
+         ]
+diff --git a/externals/cpmfile.json b/externals/cpmfile.json
+index 73cdf3e305..db824fd41d 100644
+--- a/externals/cpmfile.json
++++ b/externals/cpmfile.json
+@@ -130,6 +130,7 @@
+         "sha": "2fa2d44485",
+         "hash": "3124bbddf7bd44f11445edeca6786b5bba9fb314f27dc087d0bbd9951b0936884ece2b9b40b75cfc8e31ab10ba55854e73aa63df835c40423b1c81dd47b1437d",
+         "git_version": "2025.4",
++        "bundled": true,
+         "options": [
+             "SPIRV_SKIP_EXECUTABLES ON"
+         ],

@@ -12,7 +12,6 @@ patch -p1 < ../patches/update.patch
 if [[ "${TOOLCHAIN}" == "clang" ]]; then
     if [[ "${TARGET}" == "PGO" ]]; then
         EXTRA_CMAKE_FLAGS+=(
-            "-DYUZU_USE_BUNDLED_FFMPEG=ON"
             "-DCMAKE_C_COMPILER=clang-cl"
             "-DCMAKE_CXX_COMPILER=clang-cl"
             "-DCMAKE_CXX_FLAGS=-Ofast -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -Wno-backend-plugin -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date"
@@ -20,7 +19,6 @@ if [[ "${TOOLCHAIN}" == "clang" ]]; then
         )
     else
         EXTRA_CMAKE_FLAGS+=(
-            "-DYUZU_USE_BUNDLED_FFMPEG=ON"
             "-DCMAKE_C_COMPILER=clang-cl"
             "-DCMAKE_CXX_COMPILER=clang-cl"
             "-DCMAKE_CXX_FLAGS=-Ofast"
@@ -30,28 +28,30 @@ if [[ "${TOOLCHAIN}" == "clang" ]]; then
         )
     fi
 elif [[ "${TOOLCHAIN}" == "msys2" ]]; then
+    # patch to some use cpm libs
+    patch -p1 < ../patches/mingw.patch
+    
     if [[ "${TARGET}" == "PGO" ]]; then
         EXTRA_CMAKE_FLAGS+=(
-            "-DYUZU_USE_EXTERNAL_FFMPEG=ON"
+            "-DYUZU_USE_EXTERNAL_SDL2=ON"
             "-DCMAKE_C_COMPILER=clang"
             "-DCMAKE_CXX_COMPILER=clang++"
-            "-DCMAKE_CXX_FLAGS=-O3 -ffast-math -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
-            "-DCMAKE_C_FLAGS=-O3 -ffast-math -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
+            "-DCMAKE_CXX_FLAGS=-fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
+            "-DCMAKE_C_FLAGS=-fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
         )
     else
         EXTRA_CMAKE_FLAGS+=(
-            "-DYUZU_USE_EXTERNAL_FFMPEG=ON"
+            "-DYUZU_USE_EXTERNAL_SDL2=ON"
             "-DYUZU_ENABLE_LTO=ON"
             "-DDYNARMIC_ENABLE_LTO=ON"
-            "-DCMAKE_CXX_FLAGS=-Ofast -flto=auto -w"
-            "-DCMAKE_C_FLAGS=-Ofast -flto=auto -w"
+            "-DCMAKE_CXX_FLAGS=-flto=auto -w"
+            "-DCMAKE_C_FLAGS=-flto=auto -w"
             "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
             "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
         )
     fi
 else
     EXTRA_CMAKE_FLAGS+=(
-    "-DYUZU_USE_BUNDLED_FFMPEG=ON"
     "-DYUZU_ENABLE_LTO=ON"
     "-DDYNARMIC_ENABLE_LTO=ON"
     "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
@@ -75,6 +75,7 @@ cmake .. -G Ninja \
     -DDYNARMIC_TESTS=OFF \
     -DYUZU_TESTS=OFF \
     -DYUZU_USE_BUNDLED_QT=OFF \
+    -DYUZU_USE_BUNDLED_FFMPEG=ON \
     -DYUZU_USE_CPM=ON \
     -DENABLE_QT_TRANSLATION=ON \
     -DENABLE_UPDATE_CHECKER=ON \
@@ -91,6 +92,9 @@ if [[ "${TARGET}" == "normal" ]]; then
 fi
 
 # Gather dependencies
+windeployqt6 --release --no-compiler-runtime --no-opengl-sw --no-system-dxc-compiler --no-system-d3d-compiler --dir bin ./bin/eden.exe
+
+# Recursively copy dependencies for MSYS2 builds
 if [[ "${TOOLCHAIN}" == "msys2" ]]; then
     export PATH="/mingw64/bin:${PATH}"
     copy_deps() {
@@ -113,8 +117,9 @@ if [[ "${TOOLCHAIN}" == "msys2" ]]; then
         done
     }
     copy_deps ./bin/eden.exe
+    # grab deps for Qt plugins
+    find ./bin/ -name "*.dll" | while read -r dll; do copy_deps "$dll"; done
 fi
-windeployqt6 --release --no-compiler-runtime --no-opengl-sw --no-system-dxc-compiler --no-system-d3d-compiler --dir bin ./bin/eden.exe
 
 # Delete un-needed debug files 
 if [[ "${TOOLCHAIN}" == "msys2" ]]; then
