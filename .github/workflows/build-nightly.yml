@@ -281,7 +281,7 @@ jobs:
           cache: false
           install: autoconf automake-wrapper automake autoconf-archive base-devel git libtool make p7zip zip unzip
           pacboy: >-
-            boost:p ccache:p clang:p cmake:p glslang:p libusb:p lld:p ninja:p qt6-base:p qt6-tools:p qt6-translations:p qt6-svg:p rapidjson:p toolchain:p python-pip:p
+            boost:p ccache:p clang:p cmake:p glslang:p libusb:p lld:p llvm:p ninja:p qt6-base:p qt6-tools:p qt6-translations:p qt6-svg:p rapidjson:p toolchain:p python-pip:p
 
       - name: Install Qt
         if: ${{ matrix.toolchain != 'msys2' }}
@@ -304,10 +304,9 @@ jobs:
           
       - name: Update LLVM
         if: ${{ matrix.toolchain != 'msys2' && matrix.toolchain == 'clang' }}
-        shell: bash
+        shell: powershell
         run: |
-          choco upgrade llvm --no-progress
-          echo "C:/Program Files/LLVM/bin" >> $GITHUB_PATH
+          ./install-llvm.ps1
           
       - name: Clone Eden
         run: |

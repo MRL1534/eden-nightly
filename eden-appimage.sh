@@ -1,8 +1,6 @@
 #!/bin/bash
 
-set -exu # -u: exit if referenced variables aren't assigned
-         # -e: exit upon command error (NOTE: Builtin operator failures are handled differently depending the shell. POSIX behavior would be to quit, even if the condition was done with `test` )
-         # -x: Print values of referenced variables, assignments, conditions and commands as they are executed/evaluated
+set -e
 
 export APPIMAGE_EXTRACT_AND_RUN=1
 export ARCH="$(uname -m)"
@@ -25,6 +23,12 @@ case "$1" in
         ;;
     steamdeck-pgo)
         echo "Making Eden PGO_Optimized Build for Steam Deck"
+        # merge PGO data
+        cd pgo
+        chmod +x ./merge.sh
+        ./merge.sh 5 3 1
+        cd ..
+
         CMAKE_CXX_FLAGS="-march=znver2 -mtune=znver2 -Ofast -pipe -flto=thin -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
         CMAKE_C_FLAGS="-march=znver2 -mtune=znver2 -Ofast -pipe -flto=thin -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
  		PROFILE="steamdeck"
@@ -46,6 +50,12 @@ case "$1" in
         ;;
     rog-pgo)
         echo "Making Eden PGO Optimized Build for ROG ALLY X"
+        # merge PGO data
+        cd pgo
+        chmod +x ./merge.sh
+        ./merge.sh 5 3 1
+        cd ..
+
         CMAKE_CXX_FLAGS="-march=znver4 -mtune=znver4 -Ofast -pipe -flto=thin -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
         CMAKE_C_FLAGS="-march=znver4 -mtune=znver4 -Ofast -pipe -flto=thin -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
  		PROFILE="steamdeck"
@@ -67,6 +77,12 @@ case "$1" in
         ;;
     common-pgo)
         echo "Making Eden PGO Optimized Build for Modern CPUs"
+        # merge PGO data
+        cd pgo
+        chmod +x ./merge.sh
+        ./merge.sh 5 3 1
+        cd ..
+
         CMAKE_CXX_FLAGS="-march=x86-64-v3 -Ofast -pipe -flto=thin -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
         CMAKE_C_FLAGS="-march=x86-64-v3 -Ofast -pipe -flto=thin -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
         TARGET="Common-PGO"
@@ -88,6 +104,12 @@ case "$1" in
         ;;
     legacy-pgo)
         echo "Making Eden Optimized Build for Legacy CPUs"
+        # merge PGO data
+        cd pgo
+        chmod +x ./merge.sh
+        ./merge.sh 5 3 1
+        cd ..
+
         CMAKE_CXX_FLAGS="-march=x86-64 -mtune=generic -O2 -pipe -flto=thin -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
         CMAKE_C_FLAGS="-march=x86-64 -mtune=generic -O2 -pipe -flto=thin -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
         TARGET="Legacy-PGO"

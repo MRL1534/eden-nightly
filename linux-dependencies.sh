@@ -27,6 +27,7 @@ pacman -Syu --noconfirm \
 	ninja \
 	numactl \
  	mold \
+	p7zip \
 	patchelf \
 	pulseaudio \
 	pulseaudio-alsa \

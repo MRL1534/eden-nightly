@@ -1,5 +1,5 @@
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index 59397f6acb..7845a8833e 100644
+index 995b25a2c7..a2b99ff0a8 100644
 --- a/externals/ffmpeg/CMakeLists.txt
 +++ b/externals/ffmpeg/CMakeLists.txt
 @@ -25,18 +25,27 @@ if (UNIX AND NOT ANDROID)
@@ -35,7 +35,7 @@ index 59397f6acb..7845a8833e 100644
      endif()
  
      if(LIBVA_FOUND)
-@@ -250,7 +259,7 @@ else()
+@@ -251,7 +260,7 @@ else()
          OUTPUT
              ${FFmpeg_BUILD_LIBRARIES}
          COMMAND
@@ -45,10 +45,10 @@ index 59397f6acb..7845a8833e 100644
              ${FFmpeg_BUILD_DIR}
      )
 diff --git a/src/yuzu_cmd/CMakeLists.txt b/src/yuzu_cmd/CMakeLists.txt
-index 211b3141c2..01f1429d4d 100644
+index b26628e074..2477529958 100644
 --- a/src/yuzu_cmd/CMakeLists.txt
 +++ b/src/yuzu_cmd/CMakeLists.txt
-@@ -55,6 +55,10 @@ if(WIN32)
+@@ -55,4 +55,8 @@ if(WIN32)
      endif()
  endif()
  
@@ -56,6 +56,4 @@ index 211b3141c2..01f1429d4d 100644
 +    target_link_libraries(yuzu-cmd PRIVATE ssp)
 +endif()
 +
- if (MSVC)
-     include(CopyYuzuSDLDeps)
-     copy_yuzu_SDL_deps(yuzu-cmd)
+ create_target_directory_groups(yuzu-cmd)

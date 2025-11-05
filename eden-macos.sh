@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 echo "Making Eden for MacOS"
 if [ "$TARGET" = "arm64" ]; then

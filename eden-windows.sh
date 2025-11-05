@@ -1,6 +1,14 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 echo "Making Eden for Windows ${TOOLCHAIN}-${TARGET}-${ARCH}"
+
+# merge PGO data
+if [[ "${TARGET}" == "PGO" ]]; then
+    cd pgo
+    chmod +x ./merge.sh
+    ./merge.sh 5 3 1
+    cd ..
+fi
 
 cd ./eden
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 echo "Generating changelog for release"
 
