@@ -3,7 +3,7 @@
 
 $ErrorActionPreference = "Stop"
 
-$LLVMVer = "21.1.4"
+$LLVMVer = "21.1.5"
 $ExeFile = "LLVM-$LLVMVer-win64.exe"
 $Uri = "https://github.com/llvm/llvm-project/releases/download/llvmorg-$LLVMVer/$ExeFile"
 $Destination = "./$ExeFile"

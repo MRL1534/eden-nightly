@@ -15,7 +15,7 @@ for archive in ./*.7z; do
     echo "-- Merging profraw files for version: $version"
     llvm-profdata merge "$temp"/*.profraw -o "$temp/$version.profdata" 2>/dev/null || {
       # windows llvm can't handle zlib compressed profraw files
-      echo "-- WARNING: Non-compatible profraw file: $version, use premerged profdata instead."
+      echo "   WARNING: Non-compatible profraw file: $version, use premerged profdata instead."
       rm -rf "$temp"
       continue
     }
@@ -72,4 +72,4 @@ done
 
 llvm-profdata merge "${merge_args[@]}" -o "$OUTPUT"
 
-echo "-- Final merged profdata: $OUTPUT --"
+echo "-- Final merged profdata: $OUTPUT"
