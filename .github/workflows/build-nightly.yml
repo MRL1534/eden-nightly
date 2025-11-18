@@ -29,7 +29,7 @@ jobs:
       matrix:
         target: [Info]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v5.0.1
         with:
           persist-credentials: false
 
@@ -118,7 +118,7 @@ jobs:
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v5.0.1
         with:
           persist-credentials: false
 
@@ -184,11 +184,10 @@ jobs:
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v5.0.1
 
       - name: Install dependencies
         run: |
-          sudo rm /var/lib/man-db/auto-update
           sudo apt-get update -y
           sudo apt-get install ccache glslang-tools libvulkan-dev python3-requests -y
 
@@ -266,7 +265,7 @@ jobs:
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v5.0.1
 
       - name: Set up MSVC
         if: ${{ matrix.toolchain != 'msys2' }}
@@ -283,7 +282,8 @@ jobs:
           cache: false
           install: autoconf automake-wrapper automake autoconf-archive base-devel git libtool make p7zip zip unzip
           pacboy: >-
-            boost:p ccache:p clang:p cmake:p glslang:p libusb:p lld:p llvm:p ninja:p qt6-base:p qt6-tools:p qt6-translations:p qt6-svg:p rapidjson:p toolchain:p python-pip:p
+            boost:p ccache:p clang:p cmake:p enet:p glslang:p libusb:p lld:p llvm:p lz4:p mbedtls:p ninja:p nlohmann-json:p opus:p qt6-tools:p qt6-translations:p qt6-svg:p qt6-static:p rapidjson:p toolchain:p python-pip:p zlib:p zstd:p
+            jbigkit:p xz:p libdeflate:p bzip2:p lerc:p graphite2:p crt-git:p libwebp:p libtiff:p brotli:p
 
       - name: Install Qt
         if: ${{ matrix.toolchain != 'msys2' }}
@@ -401,13 +401,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install --formula --quiet autoconf automake boost ccache glslang hidapi libiconv libtool nasm speexdsp vulkan-loader vulkan-headers vulkan-utility-libraries molten-vk
+          brew install --formula --quiet autoconf automake boost ccache glslang hidapi libiconv libtool mbedtls nasm speexdsp vulkan-loader vulkan-headers vulkan-utility-libraries molten-vk
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: 6.7.3
-          cache: 'true'
+        run: |
+          mkdir -p Qt/6.7.3
+          cd Qt/6.7.3
+          curl -L -o qt.tar.gz https://github.com/eden-emulator/QtStatic/releases/download/6.7.3/qt-6.7.3-macos.tar.gz
+          tar xf qt.tar.gz
+          rm qt.tar.gz
 
       - name: Compile Eden MacOS (${{ matrix.target }})
         run: |
@@ -442,7 +444,7 @@ jobs:
       CCACHE_SLOPPINESS: time_macros
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v5.0.1
         
       - name: Clone Eden
         run: |

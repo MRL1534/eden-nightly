@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 export ARCH="amd64"
 
@@ -10,9 +10,8 @@ COUNT="$(git rev-list --count HEAD)"
 
 declare -a EXTRA_CMAKE_FLAGS=()
 if [ "$TARGET" = "Solaris" ]; then
-    # libdrm and gmake
     git apply ../patches/solaris.patch
-
+    
     export PKG_CONFIG_PATH=/usr/lib/64/pkgconfig:/usr/lib/pkgconfig
 
     EXTRA_CMAKE_FLAGS+=(

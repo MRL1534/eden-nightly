@@ -22,16 +22,16 @@ mkdir -p build
 cd build
 cmake .. -GNinja \
     -DYUZU_TESTS=OFF \
-	-DBUILD_TESTING=OFF \
- 	-DDYNARMIC_TESTS=OFF \
+    -DBUILD_TESTING=OFF \
+    -DDYNARMIC_TESTS=OFF \
     -DYUZU_USE_BUNDLED_QT=OFF \
-	-DYUZU_USE_EXTERNAL_SDL2=ON \
-	-DYUZU_USE_EXTERNAL_FFMPEG=ON \
-	-DYUZU_USE_BUNDLED_SIRIT=ON \
-	-DYUZU_USE_CPM=ON \
-	-DYUZU_USE_FASTER_LD=OFF \
+    -DYUZU_STATIC_BUILD=ON \
+    -DYUZU_USE_BUNDLED_SIRIT=ON \
+    -DYUZU_USE_BUNDLED_MOLTENVK=ON \
+    -DYUZU_USE_CPM=ON \
+    -DYUZU_USE_FASTER_LD=OFF \
     -DENABLE_QT_TRANSLATION=ON \
-	-DENABLE_UPDATE_CHECKER=ON \
+    -DENABLE_UPDATE_CHECKER=ON \
     -DYUZU_ENABLE_LTO=ON \
     -DUSE_DISCORD_PRESENCE=OFF \
     -DYUZU_CMD=OFF \
@@ -40,7 +40,8 @@ cmake .. -GNinja \
     -DCMAKE_CXX_FLAGS="-w" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+    -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/Qt/6.7.3/lib/cmake
 ninja
 echo "-- Build Completed."
 
@@ -48,9 +49,8 @@ echo "-- Build stats:"
 ccache -s -v
 
 # Bundle and code-sign eden.app
-echo "-- Bundling and code-signing Eden.app..."
+echo "-- Code-signing Eden.app..."
 APP=./bin/eden.app
-macdeployqt "$APP"
 codesign --deep --force --verify --verbose --sign - "$APP"
 
 # Pack for upload
