@@ -338,10 +338,10 @@ jobs:
           chmod +x ./eden-windows.sh
           ./eden-windows.sh
 
-      - name: Install NSIS
-        uses: repolevedavaj/install-nsis@v1.1.0
-        with:
-          nsis-version: '3.11'
+      # - name: Install NSIS
+        # uses: repolevedavaj/install-nsis@v1.1.0
+        # with:
+          # nsis-version: '3.11'
 
       # - name: Generate installer
         # shell: cmd
