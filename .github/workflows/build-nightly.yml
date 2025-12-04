@@ -29,7 +29,7 @@ jobs:
       matrix:
         target: [Info]
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v6.0.1
         with:
           persist-credentials: false
 
@@ -118,7 +118,7 @@ jobs:
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v6.0.1
         with:
           persist-credentials: false
 
@@ -176,7 +176,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [Replace, Coexist, Optimized, Legacy]
+        target: [Replace, Coexist, Optimized, Legacy, ChromeOS]
     name: "Android (${{ matrix.target }})"
     env:
       TARGET: ${{ matrix.target }}
@@ -184,7 +184,7 @@ jobs:
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v6.0.1
 
       - name: Install dependencies
         run: |
@@ -233,7 +233,7 @@ jobs:
            - toolchain: msvc
              optimize: normal
              arch: x86_64
-             runs-on: windows-2022
+             runs-on: windows-latest
            # - toolchain: msvc
              # optimize: normal
              # arch: arm64
@@ -241,19 +241,19 @@ jobs:
            # - toolchain: clang
              # optimize: normal
              # arch: x86_64
-             # runs-on: windows-2022
+             # runs-on: windows-latest
 #           - toolchain: clang
 #             optimize: PGO
 #             arch: x86_64
-#             runs-on: windows-2022
+#             runs-on: windows-latest
 #           - toolchain: msys2
 #             optimize: PGO
 #             arch: x86_64
-#             runs-on: windows-2022
+#             runs-on: windows-latest
            - toolchain: msys2
              optimize: normal
              arch: x86_64
-             runs-on: windows-2022
+             runs-on: windows-latest
     defaults:
       run:
         shell: ${{ matrix.toolchain == 'msys2' && 'msys2 {0}' || 'bash {0}' }}
@@ -265,7 +265,7 @@ jobs:
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v6.0.1
 
       - name: Set up MSVC
         if: ${{ matrix.toolchain != 'msys2' }}
@@ -282,7 +282,8 @@ jobs:
           cache: false
           install: autoconf automake-wrapper automake autoconf-archive base-devel git libtool make p7zip zip unzip
           pacboy: >-
-            boost:p ccache:p clang:p cmake:p enet:p glslang:p libusb:p lld:p llvm:p lz4:p mbedtls:p ninja:p nlohmann-json:p opus:p qt6-tools:p qt6-translations:p qt6-svg:p qt6-static:p rapidjson:p toolchain:p python-pip:p zlib:p zstd:p
+            boost:p ccache:p clang:p cmake:p enet:p glslang:p libusb:p lld:p llvm:p lz4:p mbedtls:p ninja:p nlohmann-json:p 
+            opus:p qt6-tools:p qt6-translations:p qt6-svg:p qt6-static:p rapidjson:p toolchain:p python-pip:p vulkan-memory-allocator:p vulkan-devel:p zlib:p zstd:p
             jbigkit:p xz:p libdeflate:p bzip2:p lerc:p graphite2:p crt-git:p libwebp:p libtiff:p brotli:p
 
       - name: Install Qt
@@ -337,6 +338,11 @@ jobs:
           chmod +x ./eden-windows.sh
           ./eden-windows.sh
 
+      - name: Install NSIS
+        uses: repolevedavaj/install-nsis@v1.1.0
+        with:
+          nsis-version: '3.11'
+
       # - name: Generate installer
         # shell: cmd
         # working-directory: ${{ github.workspace }}/installer
@@ -379,7 +385,7 @@ jobs:
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Clone Eden
         run: |
@@ -444,7 +450,7 @@ jobs:
       CCACHE_SLOPPINESS: time_macros
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5.0.1
+        uses: actions/checkout@v6.0.1
         
       - name: Clone Eden
         run: |
@@ -456,9 +462,8 @@ jobs:
           cp -v "$GITHUB_WORKSPACE"/dist/*.ts ./eden/dist/languages/
 
       - name: Restore ccache
-        if: matrix.target == 'FreeBSD'
         uses: actions/cache/restore@v4
-        id: restore-ccache-freebsd
+        id: restore-ccache
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ${{ runner.os }}-${{ matrix.target }}-ccache-${{ github.run_id }}
@@ -467,7 +472,7 @@ jobs:
 
       - name: Compile Eden FreeBSD
         if: matrix.target == 'FreeBSD'
-        uses: vmactions/freebsd-vm@v1.2.6
+        uses: vmactions/freebsd-vm@v1.2.8
         with:
           usesh: true
           envs: 'TARGET CCACHE_DIR CCACHE_COMPILERCHECK CCACHE_SLOPPINESS'
@@ -478,20 +483,20 @@ jobs:
 
       - name: Compile Eden Solaris
         if: matrix.target == 'Solaris'
-        uses: vmactions/solaris-vm@v1.1.6
+        uses: vmactions/solaris-vm@v1.1.8
         with:
           usesh: true
-          envs: 'TARGET'
+          envs: 'TARGET CCACHE_DIR CCACHE_COMPILERCHECK CCACHE_SLOPPINESS'
           run: |
             chmod +x ./BSD-dependencies.sh ./eden-BSD.sh
             ./BSD-dependencies.sh && ./eden-BSD.sh
 
       - name: Save ccache
-        if: matrix.target == 'FreeBSD' && github.ref_name == 'main'
+        if: github.ref_name == 'main'
         uses: actions/cache/save@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ steps.restore-ccache-freebsd.outputs.cache-primary-key }}
+          key: ${{ steps.restore-ccache.outputs.cache-primary-key }}
 
       - name: Upload
         uses: actions/upload-artifact@v5.0.0
@@ -532,7 +537,7 @@ jobs:
           echo "EOF" >> "${GITHUB_ENV}"
 
       - name: Release Eden
-        uses: softprops/action-gh-release@v2.4.2
+        uses: softprops/action-gh-release@v2.5.0
         with:
           name: "Eden Unofficial Nightly Release: ${{ env.COUNT }}"
           tag_name: "${{ env.TAG }}"

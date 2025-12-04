@@ -16,31 +16,50 @@ echo "-- Applying updater patch..."
 git apply ../patches/update.patch
 echo "   Done."
 
+# hook apk fetcher and installer
+echo "-- Applying apk fetcher and installer patch..."
+git apply ../patches/android.patch
+echo "   Done."
+
 if [ "$TARGET" = "Coexist" ]; then
-    # Change the App name and application ID to make it coexist with official build, and use different launcher icon
+    # Change the App name and application ID to make it coexist with official build
 	echo "-- Applying coexist patch..."
     git apply ../patches/coexist.patch
 	echo "   Done."
 fi        
 
-cd src/android
-chmod +x ./gradlew
+# Set extra cmake flags
+CMAKE_FLAGS=(
+    "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
+    "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+    "-DENABLE_UPDATE_CHECKER=ON"
+)
 
-CMAKE_FLAGS="-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DENABLE_UPDATE_CHECKER=ON"
 echo "-- Extra CMake Flags:"
-echo "	 -DCMAKE_C_COMPILER_LAUNCHER=ccache"
-echo "	 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
-echo "	 -DENABLE_UPDATE_CHECKER=ON"
+for flag in "${CMAKE_FLAGS[@]}"; do
+    echo "  $flag"
+done
+
+# Set flavor for gradle build
+case "$TARGET" in
+	Optimized)
+		FLAVOR="GenshinSpoof"
+	;;
+	Legacy)
+		FLAVOR="Legacy"
+	;;
+	ChromeOS)
+		FLAVOR="ChromeOS"
+	;;
+	*)
+		FLAVOR="Mainline"
+	;;
+esac
 
 echo "-- Starting Gradle build..."
-if [ "$TARGET" = "Optimized" ]; then
-	./gradlew assembleGenshinSpoofRelease -PYUZU_ANDROID_ARGS="$CMAKE_FLAGS"
-elif [ "$TARGET" = "Legacy" ]; then
-	./gradlew assembleLegacyRelease -PYUZU_ANDROID_ARGS="$CMAKE_FLAGS"
-else
-	./gradlew assembleMainlineRelease -PYUZU_ANDROID_ARGS="$CMAKE_FLAGS"
-fi
-echo "-- Build Completed."
+cd src/android
+chmod +x ./gradlew
+./gradlew "assemble${FLAVOR}Release" -PYUZU_ANDROID_ARGS="${CMAKE_FLAGS[*]}"
 
 echo "-- Ccache stats:"
 ccache -s -v

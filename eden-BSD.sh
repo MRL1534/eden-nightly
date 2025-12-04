@@ -13,6 +13,7 @@ if [ "$TARGET" = "Solaris" ]; then
     git apply ../patches/solaris.patch
     
     export PKG_CONFIG_PATH=/usr/lib/64/pkgconfig:/usr/lib/pkgconfig
+    export PATH="/usr/local/bin:$PATH"
 
     EXTRA_CMAKE_FLAGS+=(
       "-DYUZU_USE_BUNDLED_OPENSSL=ON"
@@ -41,8 +42,6 @@ elif [ "$TARGET" = "FreeBSD" ]; then
       "-DENABLE_UPDATE_CHECKER=ON"
       "-DCMAKE_CXX_FLAGS=-Ofast -pipe -fuse-ld=lld -w"
       "-DCMAKE_C_FLAGS=-Ofast -pipe -fuse-ld=lld -w"
-      "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
-      "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
       "-DQt6_DIR=${QT6_DIR}"
     )
 fi
@@ -57,12 +56,12 @@ cmake .. -GNinja \
     -DYUZU_ROOM_STANDALONE=OFF \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_SYSTEM_PROCESSOR="$ARCH" \
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     "${EXTRA_CMAKE_FLAGS[@]}"
 ninja
 
-if [ "$TARGET" = "FreeBSD" ]; then
-  ccache -s
-fi
+ccache -s
 
 # Create base pkg dir
 PKG_NAME="Eden-${COUNT}-${TARGET}-${ARCH}"

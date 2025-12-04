@@ -209,6 +209,9 @@ chmod +x ./quick-sharun
 ./quick-sharun ./build/bin/eden
 echo 'QT_QPA_PLATFORM=xcb' >> AppDir/.env
 
+# Change desktop entry name to 'Eden Nightly'
+sed -i 's|Name=Eden|Name=Eden Nightly|' ./AppDir/*.desktop
+
 # Use uruntime to make appimage
 echo "-- Creating AppImage..."
 wget -q --retry-connrefused --tries=30 "$URUNTIME" -O ./uruntime2appimage

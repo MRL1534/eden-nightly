@@ -38,7 +38,6 @@ declare -a BASE_CMAKE_FLAGS=(
     "-DYUZU_TESTS=OFF"
     "-DYUZU_USE_BUNDLED_QT=OFF"
     "-DYUZU_USE_BUNDLED_FFMPEG=ON"
-    "-DYUZU_USE_CPM=ON"
     "-DENABLE_QT_TRANSLATION=ON"
     "-DENABLE_UPDATE_CHECKER=ON"
     "-DUSE_DISCORD_PRESENCE=ON"
@@ -56,15 +55,15 @@ case "${TOOLCHAIN}" in
             EXTRA_CMAKE_FLAGS+=(
                 "-DCMAKE_C_COMPILER=clang-cl"
                 "-DCMAKE_CXX_COMPILER=clang-cl"
-                "-DCMAKE_CXX_FLAGS=-Ofast -DNOMINMAX -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -Wno-backend-plugin -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date"
-                "-DCMAKE_C_FLAGS=-Ofast -DNOMINMAX -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -Wno-backend-plugin -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date"
+                "-DCMAKE_CXX_FLAGS=-Ofast -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -Wno-backend-plugin -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date"
+                "-DCMAKE_C_FLAGS=-Ofast -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -Wno-backend-plugin -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date"
             )
         else
             EXTRA_CMAKE_FLAGS+=(
                 "-DCMAKE_C_COMPILER=clang-cl"
                 "-DCMAKE_CXX_COMPILER=clang-cl"
-                "-DCMAKE_CXX_FLAGS=-Ofast -DNOMINMAX"
-                "-DCMAKE_C_FLAGS=-Ofast -DNOMINMAX"
+                "-DCMAKE_CXX_FLAGS=-Ofast"
+                "-DCMAKE_C_FLAGS=-Ofast"
                 "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
                 "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
             )
@@ -77,17 +76,15 @@ case "${TOOLCHAIN}" in
                 "-DQt6_DIR=D:/a/_temp/msys64/MINGW64/qt6-static/lib/cmake/Qt6"
                 "-DCMAKE_C_COMPILER=clang"
                 "-DCMAKE_CXX_COMPILER=clang++"
-                "-DCMAKE_CXX_FLAGS=-fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
-                "-DCMAKE_C_FLAGS=-fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
+                "-DCMAKE_CXX_FLAGS=-march=x86-64-v3 -mtune=generic -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
+                "-DCMAKE_C_FLAGS=-march=x86-64-v3 -mtune=generic -fuse-ld=lld -fprofile-use=${GITHUB_WORKSPACE}/pgo/eden.profdata -fprofile-correction -w"
             )
         else
             EXTRA_CMAKE_FLAGS+=(
                 "-DYUZU_STATIC_BUILD=ON"
                 "-DQt6_DIR=D:/a/_temp/msys64/MINGW64/qt6-static/lib/cmake/Qt6"
-                "-DYUZU_ENABLE_LTO=ON"
-                "-DDYNARMIC_ENABLE_LTO=ON"
-                "-DCMAKE_CXX_FLAGS=-flto=auto -w"
-                "-DCMAKE_C_FLAGS=-flto=auto -w"
+                "-DCMAKE_CXX_FLAGS=-march=x86-64-v3 -mtune=generic -O3 -w"
+                "-DCMAKE_C_FLAGS=-march=x86-64-v3 -mtune=generic -O3 -w"
                 "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
                 "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
             )

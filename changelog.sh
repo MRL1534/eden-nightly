@@ -89,6 +89,7 @@ echo "| Linux (AppBundle) | [\`Common x86_64_v3\`](${BASE_DOWNLOAD_URL}/${TAG}/E
 echo "| Android | [\`Replace\`](${BASE_DOWNLOAD_URL}/${TAG}/Eden-${COUNT}-Android-Replace.apk)<br><br>\
 [\`Coexist\`](${BASE_DOWNLOAD_URL}/${TAG}/Eden-${COUNT}-Android-Coexist.apk)<br><br>\
 [\`Optimized\`](${BASE_DOWNLOAD_URL}/${TAG}/Eden-${COUNT}-Android-Optimized.apk)<br><br>\
+[\`ChromeOS\`](${BASE_DOWNLOAD_URL}/${TAG}/Eden-${COUNT}-Android-ChromeOS.apk)<br><br>\
 [\`Legacy\`](${BASE_DOWNLOAD_URL}/${TAG}/Eden-${COUNT}-Android-Legacy.apk) |" >> "$CHANGELOG_FILE"
 echo "| Windows (MSVC) | **7z**<br>────────────────<br>\
 [\`x86_64\`](${BASE_DOWNLOAD_URL}/${TAG}/Eden-${COUNT}-Windows-msvc-x86_64.7z)<br><br>\
